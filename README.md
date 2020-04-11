@@ -170,3 +170,27 @@ sudo systemctl start ruuvicollector.service
 sudo systemctl status ruuvicollector.service
 sudo systemctl enable ruuvicollector.service
 ```
+
+### Virhetilanne - dataa ei tule
+
+1. Tarkista, että ruuvicollector on pystyssä
+   ```
+   sudo systemctl status ruuvicollector
+   ```
+   
+2. Tarkista, että komennot `hcitool lescan` ja `hcidump --raw` toimivat
+   Jos tulee virhe:
+   ```
+   $ hcitool lescan
+   Set scan parameters failed: Input/output error
+   ```
+   käynnistä hcio0 uudestaan, kts. https://stackoverflow.com/questions/22062037/hcitool-lescan-shows-i-o-error
+   ```
+   sudo hciconfig hci0 down
+   sudo hciconfig hci0 up
+   ```
+   ja tarkista komennot uudelleen.
+   Käynnistä ruuvicollector uudelleen:
+   ```
+   sudo systemctl restart ruuvicollector
+   ```
