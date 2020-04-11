@@ -194,3 +194,30 @@ sudo systemctl enable ruuvicollector.service
    ```
    sudo systemctl restart ruuvicollector
    ```
+
+### Virhetilanne - järjestelmä kaatuu
+
+Järjestelmä kaatuu grafanaa selatessa. Journal-logiin tulee viesti:
+```
+huhti 11 17:17:17 raspberrypi java[881]: 2020-04-11 17:17:17.060 INFO  [Main] Successfully reading data from hcidump
+huhti 11 17:17:17 raspberrypi java[881]: huhtik. 11, 2020 5:17:17 IP. org.influxdb.impl.BatchProcessor write
+huhti 11 17:17:17 raspberrypi java[881]: SEVERE: Batch could not be sent. Data will be lost
+huhti 11 17:17:17 raspberrypi java[881]: org.influxdb.InfluxDBIOException: java.net.ConnectException: Failed to connect
+...
+```
+
+Kokeiltu korjailla ohjeilla:
+https://community.openhab.org/t/influxdb-grafana-persistence-and-graphing/13761/213
+eli pyritään vähentämään turhaa I/O:ta muokkaamalla tiedostoa `/etc/influxdb/influxdb.conf`
+siten että:
+
+1. Estetään query-loggaus. `[data]` osiossa asetetaan `query-log-enabled = false`
+2. Estetään HTTP-pyyntöjen loggaus. `[http]` osiossa asetetaan `set log-enabled = false`
+
+Lopuksi käynnistellään palvelut uudelleen:
+```
+sudo systemctl restart influxdb
+sudo systemctl restart grafana-server
+sudo systemctl restart ruuvicollector
+```
+
